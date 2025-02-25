@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/categories", categoriesRouter);
-app.use("/api", usersRouter);
+app.use("/api/users", usersRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/books", booksRouter);
 app.use("/api/loans", loansRouter);
