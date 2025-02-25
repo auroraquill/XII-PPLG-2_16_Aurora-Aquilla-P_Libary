@@ -1,15 +1,39 @@
 // File: app.js
-const express = require('express');
-const usersRouter = require('./routes/users');
-const categoriesRouter = require('./routes/categories');
+const express = require("express");
+const categoriesRouter = require("./routes/categories");
+const usersRouter = require("./routes/users");
+const authMiddleware = require("./middleware/authMiddleware");
+const User = require("./models/User");
+const reviewRouter = require("./routes/review");
+const booksRouter = require("./routes/booksrouter");
+const loansRouter = require("./routes/loansrouter");
 
 const app = express();
 app.use(express.json());
 
-app.use('/api/users', usersRouter);
-app.use('/api/categories', categoriesRouter);
+app.use("/api/categories", categoriesRouter);
+app.use("/api", usersRouter);
+app.use("/api/review", reviewRouter);
+app.use("/api/books", booksRouter);
+app.use("/api/loans", loansRouter);
 
-const PORT = process.env.PORT || 3434;
+app.get("/profile", authMiddleware, async (req, res) => {
+    try {
+    const user = await User.findByPk(req.user.userId, {
+        attributes: { exclude: ["password"] },
+    });
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
+} catch (error) {
+    res.status(500).json({ message: "Error fetching user data" });
+}
+});
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
